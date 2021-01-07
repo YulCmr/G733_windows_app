@@ -1,5 +1,10 @@
 # G733_windows_app
 
+[Introduction](#introduction)  
+[Some Reverse...](#some-reverse...)  
+[The Software](#The-Software)  
+[How to use "Basic" logitech drivers](#How-to-use-Basic-logitech-drivers)  
+
 ## Introduction
 
 #### Why ???
@@ -34,7 +39,7 @@ G733 with Dolby :
 
 How to get Ghub features + Dolby ? Create a Ghub clone and use "basic" Logitech drivers
 
-## Some reverse ...
+## Some reverse...
 
 #### Lights
 
@@ -112,6 +117,8 @@ I made a c# .net windows form app as it's quite easy to work with, and should be
 just open G733_Dolby_Atmos_companion.sln in Visual studio and you're good to go.
 
 Or, you can [download](https://github.com/YulCmr/G733_windows_app/raw/main/G733_Dolby_Atmos_companion/G733_Dolby_Atmos_companion/bin/Release/G733_Dolby_Atmos_companion.exe) the last version and use it. You may face some bugs, but I hope community will help fix these.
+
+![app](images/app.PNG)
 
 Maybe someone with real knowledges in Windows app can make a sexier and more stable app.
 
