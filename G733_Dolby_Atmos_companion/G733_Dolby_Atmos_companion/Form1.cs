@@ -123,8 +123,6 @@ namespace G733_Dolby_Atmos_companion
             OutData[4] = side;
             OutData[5] = mode;
 
-            OutData[9] = 0x02;
-
             switch (mode)
             {
                 case off:
@@ -135,8 +133,7 @@ namespace G733_Dolby_Atmos_companion
                     OutData[6] = (byte)r;
                     OutData[7] = (byte)g;
                     OutData[8] = (byte)b;
-                    //byte 11 brightness ?? Not sure if I can do that, not in Ghub
-                    //OutData[11] = brightness;  
+                    OutData[9] = 0x02; 
                     break;
                 case breathing:
                     //bytes 6,7,8 color
@@ -146,15 +143,15 @@ namespace G733_Dolby_Atmos_companion
                     //bytes 9,10 duration
                     OutData[9] = duration_msb;
                     OutData[10] = duration_lsb;
-                    //byte 11 brightness
-                    OutData[11] = brightness;
+                    //byte 12 brightness
+                    OutData[12] = brightness;
                     break;
                 case cycling:
                     OutData[9] = 0x00;
                     //bytes 10,11 duration
                     OutData[11] = duration_msb;
                     OutData[12] = duration_lsb;
-                    //byte 12 brightness
+                    //byte 13 brightness
                     OutData[13] = brightness;
                     break;
                 default: return;
