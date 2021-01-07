@@ -1,158 +1,116 @@
 # G733_windows_app
-Allow to disable lights, change sidetone and check battery without logitech "full feature" drivers which are incompatible with Dolby Atmos
 
-### Some reverse ...
+## Introduction
 
-#### lights
+#### Why ???
 
-Off
-11ff 043a01 00 0000000000000000000000000000
+Upgrading from a G430 soundcard (which served me well during ... 6++ years !) to a G733 (finally a "big" battery life and light WIRELESS headset) I've been disappointed seeing that Logitech doesn't offer Dolby anymore (Only the DTS X 2.0, which is crap)
+I've looked at ways to get Dolby back, and Dolby Access on W10 seems to bring the same functionalities, and even more !
 
-Fixed, white (255, 255, 255)
-11ff 043a 01 01 ffffff 0200000000000000000000
+Well if you already did this, you know that something weird is going on between Dolby and Logitech drivers... I don't know what happened between them, I don't even want to know but the result is ... you get NO SOUND once Dolby is enabled. If you disable Dolby, everything comes back to life.
 
-11ff 043c 01 01 ffffff 02 00000000000000000000
-11ff 043c 00 01 ffffff 02 00000000000000000000
+If you have searched a bit for similar issues on internet, you probably ended on some reddit posts suggesting to use the "generic" / "fail safe" driver from Logitech instead of the fancy one. And it works ! If you use this one, Dolbdy is working great. BUT ! Here's the culprit. G-hub is not working anymore... What does this means ? Lights are always cycling ON as soon as the headset is turned on. You CAN'T set your Sidetone value. You CAN'T get your battery level. Well, that's a no for me.
 
-Bottom = 0x00
-Top = 0x01
+I need to be able to turn off the lights as they have a big impact on battery life, + I can see them which is quite disturbing. Can't speak of people wearing glasses, it would drives me nuts to get lights to reflect into them.
 
-Fixed, black (0, 0, 0)
-11ff 043a01 01 000000 0200000000000000000000
-11ff 043c01 01 000000 0200000000000000000000
+I need to be able to setup the Sidetone. Default value is 0. If I use this headset on 0 I'm gonna speaker louder and my neighbors are gonna hate me (Well, they might already) On G430 soundcard the driver offered the ability to set this up in windows sound panel, here, forget about it.
 
-Fixed, Red-ish (244, 25, 29)
-11ff 043a01 01 e60203 02 00000000000000000000
-11ff 043c01 01 e60203 02 00000000000000000000
+I need to know what's my battery level ! That's important and there is no way to check battery level within the headset itself like other brands. (Well, at least my Sony XM3 does this, very convenient)
 
-Breathing, white, 5000ms, 100% brightness
-11ff 043a01 02 ffffff 1388 00 64 00000000000000
+I can't live with DTS X 2.0. Sound is shitty, really, I mean....  Really.
+I can't live with Stereo only. May sound stupid but I use Dolby since 6++ years and it sounds veeeerry good in video games.
 
-11ff 043e 00 02 ffffff 1388 00 64 00000000000000
+#### TL;DR
 
-0x1388 = 0d5000
-0x64 = 0d100
+G733 without Dolby :
+- Ghub features (Lights, Sidetone, Battery, etc)
+- DTS-X 2.0 or Stereo
+- Good battery life if you turn lights off
 
-Breathing, white, 5000ms, 50% brightness
-11ff 043a01 02 ffffff 13 88 00 32 00000000000000
+G733 with Dolby :
+- No Ghub features (Lights, Sidetone, Battery, etc)
+- DOLBY !
+- Poor battery life as you can't turn lights off
 
-0x1388 = 0d5000
-0x32 = 0d050
+How to get Ghub features + Dolby ? Create a Ghub clone and use "basic" Logitech drivers
 
-Breathing, white, 5000ms, 78% brightness
-11ff 043a01 02 ffffff 13 88 00 4e 00000000000000
+## Some reverse ...
 
-0x1388 = 0d5000
-0x4e = 0d78
+#### Lights
 
-Breathing, white, 1000ms, 100% brightness
-11ff 043a 01 02 ffffff 03 e8 00 64 00000000000000
+Raw frames etc have been deleted as they are unnecessary here. But here is how it works (as far as I understand)
 
-0x03e8 = 0d1000
-0x64 = 0d100
+20 bytes frames are sent and received from headset
 
-Breathing, white, 20000ms, 100% brightness
-11ff 043a 01 02 ffffff 4e 20 00 64 00000000000000
+Features are addressed by 2 bytes long IDs :
+- Lights ID :   0x043e
+- Sidetone ID : 0x071e
+- Battery ID write :  0x080e
+- Timeout ID : 0x082e (needs to be implemented and tested)
 
-0x4e20 = 0d20000
-0x64 = 0d100
+It appears that the least significant 4 bits are not important. For example, if you want to set lights setting you can use :
+- 0x04a
+- 0x04b
+- 0x04c
+- 0x04d
+- 0x04e
+- 0x04f
 
-Cycle, 5000ms, 100%
-11ff 043e 01 03 00 00 00 00 00 1388 64 000000000000
-11ff 043e 00 03 00 00 00 00 00 1388 64 000000000000
+It doesn't seem to matter. I've used "e" everywhere as this is what I got from my headset they day I dumped my frames. (But got "f" the previous day)
 
-Send Sidetone, 100
-11ff 07 1e 64 000000000000000000000000000000
-11ff 07 1f 64 000000000000000000000000000000
+Start by filling a 20 bytes long buffer with 0x00, then fill the buffer with corresponding informations ( "-" are untouched bytes, leave 0x00)
 
-0x64 = 0d100
+| Byte | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 |
+|------|---|---|---|---|---|---|---|---|---|---|----|----|----|----|
+| lights off | 0x11 | 0xff | 0x04 | 0x3e | side | - | - | - | - | - | - | - | - | - |
+| fixed lights | 0x11 | 0xff | 0x04 | 0x3e | side | 0x01 | R | G | B | 0x02 | - | - | - | - |
+| breathing lights | 0x11 | 0xff | 0x04 | 0x3e | side | 0x02 | R | G | B | duration_msb | duration_lsb | - | brightness | - |
+| cycling lights | 0x11 | 0xff | 0x04 | 0x3e | side | 0x03 | - | - | - | - | - |duration_msb | duration_lsb | brightness |
+| Sidetone | 0x11 | 0xff | 0x07 | 0x1e | sidetone | - | - | - | - | - | - | - | - | - |
+| Battery (write) | 0x11 | 0xff | 0x08 | 0x0e | - | - | - | - | - | - | - | - | - | - |
+| Battery (read) | 0x11 | 0xff | 0x08 | 0x0e | volt_MSB | volt_LSB | state | - | - | - | - | - | - | - |
 
-Send Sidetone, 68
-11ff 071e 44 000000000000000000000000000000
-11ff 071f 44 000000000000000000000000000000
+Side is one byte :
+- top : 0x01
+- bottom : 0x00
 
-0x44 = 0d68
+Duration is two bytes long :
+- 1000ms = 0d1000 = 0x03e8 (MSB is 0x03 & LSB is 0xe8)
+- 5000ms = 0d5000 = 0x1388 (MSB is 0x13 & LSB is 0x88)
+- etc
 
-Battery ??
+Brightness is one byte long :
+- 100% = 0d100 = 0x64
+- 50% = 0d50 = 0x32
 
-Rq    .0  -> 11ff 08 0b 0000 00 00000000000000000000000000
-Rsp   .3  <- 11ff 08 0b 1045 01 00000000000000000000000000
+Sidetone is one byte long :
+- 100% = 0d100 = 0x64
+- 50% = 0d50 = 0x32
 
-1st try :
-11ff 08 00 105a 03 00000000000000000000000000 Plugged in
-11ff 08 00 107e 07 00000000000000000000000000 On charge
-11ff 08 00 1046 01 00000000000000000000000000 Unplugged
+Colors are RGB value but these are scaled. I used polynomial trendline feature on excel and ended up with this :
 
-2nd try :
-11ff 08 00 105a 03 00000000000000000000000000 Plugged in
-11ff 08 00 107f 07 00000000000000000000000000 On charge
-11ff 08 00 1045 01 00000000000000000000000000 Unplugged
+scaled_color = -0.0086\*color + 0.0028\*color² + 0.000004*color³
 
-0x105a = 0d4186 --> 4086mV
-0x107f = 0d4223 --> 4223mV
-0x1045 = 0d4165 --> 4165mV
+Following this :
+- 0d255 = 0d255 (scaled) = 0xff
+- 0d200 = 0d147 (scaled) = 0x93
+- 0d100 = 0d32 (scaled) = 0x20
 
-Needs to be converted in %
+Voltage is two bytes long  :
+- 4000mV = 0d4000 = 0x0fa0 (MSB is 0x0f & LSB is 0xa0)
+- 3800mV = 0d3800 = 0x0ed8 (MSB is 0x0e & LSB is 0xd8)
 
-Battery update :
-read req : 11ff 08 0f 00000000000000000000000000000000
-read rsp : 11ff 08 0f 1042 01 00000000000000000000000000
+State is one byte long :
+- 0x01 : Unplugged (Discharging)
+- 0x03 : Cable just got inserted (Interrupt frame)
+- 0x07 : Plugged (Charging)
 
-01 : Unplugged
-03 : Just plugged
-07 : Charging
+## The software
 
-Wireshark filters :
-usb.bInterfaceClass == HID &&  (usb.dst == "1.23.0" || usb.src == "1.23.0")
-usb.src == "1.23.0" || usb.dst == "1.23.0"  || usb.src == "1.23.1" || usb.dst == "1.23.1"
-usb.src == "1.24.0" || usb.dst == "1.24.0"  || usb.src == "1.24.1" || usb.dst == "1.24.1"  || usb.src == "1.24.2" || usb.dst == "1.24.2"  || usb.src == "1.24.3" || usb.dst == "1.24.3"
+I made a c# .net windows form app as it's quite easy to work with, and should be compatible with every W10 computer. (+ as an Embedded systems dev, I'm more into C code targeting Arm Cortex-M MCUs)
 
-usb.src == "1.14.0" || usb.dst == "1.14.0" || usb.src == "1.14.3" || usb.dst == "1.14.3"
+just open G733_Dolby_Atmos_companion.sln in Visual studio and you're good to go.
 
-.0 -> HID commands write
-.1 -> Audio Stream IN (mic)??
-.2 -> Audio Stream OUT (speaker) ??
-.3 -> HID commands read (+ interrupts ?)
+Or, you can [download](G733_Dolby_Atmos_companion\G733_Dolby_Atmos_companion\bin\Release\G733_Dolby_Atmos_companion.exe) the last version and use it. You may face some bugs, but I hope community will help fix these.
 
-Timeout poweroff :
-
-write : 11ff 08 2f 01 000000000000000000000000000000
-resp  : OK ? (resp NULL)
-read  : 11ff 08 1f 00 000000000000000000000000000000
-resp  : 11ff 08 1f 01 000000000000000000000000000000
-
-Unknown :
-
-read  : 11ff 070c 00 000000000000000000000000000000
-resp  : 11ff 070c 64 000000000000000000000000000000
-
-read  : 11ff 044c 0001 0000000000000000000000000000
-resp  : 11ff 044c 0100 0000000000000000000000000000
-
-read :  11ff 081c 00 000000000000000000000000000000
-resp :  11ff 081c 05 000000000000000000000000000000
-
-Red :
-00 -> 00
-13 -> 01
-22 -> 02
-29 -> 03
-34 -> 04
-39 -> 05
-43 -> 06
-47 -> 07
-
-00 -> 00
-25-> 02
-50 -> 08
-75 -> 11
-100 -> 20
-125 -> 34
-150 -> 4d
-175 -> 6d
-200 -> 93
-225 -> c0
-250 -> F3
-255 -> FF
-
-Blue
+Maybe someone with real knowledges in Windows app can make a sexier and more stable app.
