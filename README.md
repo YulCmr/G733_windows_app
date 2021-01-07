@@ -5,15 +5,15 @@
 #### Why ???
 
 Upgrading from a G430 soundcard (which served me well during ... 6++ years !) to a G733 (finally a "big" battery life and light WIRELESS headset) I've been disappointed seeing that Logitech doesn't offer Dolby anymore (Only the DTS X 2.0, which is crap)
-I've looked at ways to get Dolby back, and Dolby Access on W10 seems to bring the same functionalities, and even more !
+I've looked at ways to get Dolby back, Dolby Access on W10 seems to bring the same functionalities, and even more !
 
-Well if you already did this, you know that something weird is going on between Dolby and Logitech drivers... I don't know what happened between them, I don't even want to know but the result is ... you get NO SOUND once Dolby is enabled. If you disable Dolby, everything comes back to life.
+Well if you already tried this, you know that something weird is going on between Dolby Atmos and Logitech drivers... I don't know what happened between them, I don't even want to know but the result is ... you get NO SOUND once Dolby is enabled. If you disable Dolby, everything comes back to life.
 
-If you have searched a bit for similar issues on internet, you probably ended on some reddit posts suggesting to use the "generic" / "fail safe" driver from Logitech instead of the fancy one. And it works ! If you use this one, Dolbdy is working great. BUT ! Here's the culprit. G-hub is not working anymore... What does this means ? Lights are always cycling ON as soon as the headset is turned on. You CAN'T set your Sidetone value. You CAN'T get your battery level. Well, that's a no for me.
+If you have searched a bit for similar issues on internet, you probably ended on some reddit posts suggesting to use the "generic" / "fail safe" driver from Logitech instead of the fancy one. And it works ! If you use this one, Dolby is working great. BUT ! Here's the issue. G-hub is not working anymore... What does this means ? Lights are always cycling ON as soon as the headset is turned on. You CAN'T set your Sidetone value. You CAN'T get your battery level. Well, that's a no for me.
 
-I need to be able to turn off the lights as they have a big impact on battery life, + I can see them which is quite disturbing. Can't speak of people wearing glasses, it would drives me nuts to get lights to reflect into them.
+I need to be able to turn off the lights as they have a big impact on battery life, + I can see them which is quite disturbing. Can't speak of people wearing glasses, it would drives me crazy to get lights to reflect into them.
 
-I need to be able to setup the Sidetone. Default value is 0. If I use this headset on 0 I'm gonna speaker louder and my neighbors are gonna hate me (Well, they might already) On G430 soundcard the driver offered the ability to set this up in windows sound panel, here, forget about it.
+I need to be able to setup the Sidetone. Default value is 0. If I use this headset on 0 I'm going to speak louder and my neighbors are gonna hate me (Well, they might already) On G430 soundcard the driver provided the ability to set this up in windows sound panel, here, forget about it.
 
 I need to know what's my battery level ! That's important and there is no way to check battery level within the headset itself like other brands. (Well, at least my Sony XM3 does this, very convenient)
 
@@ -114,3 +114,18 @@ just open G733_Dolby_Atmos_companion.sln in Visual studio and you're good to go.
 Or, you can [download](G733_Dolby_Atmos_companion\G733_Dolby_Atmos_companion\bin\Release\G733_Dolby_Atmos_companion.exe) the last version and use it. You may face some bugs, but I hope community will help fix these.
 
 Maybe someone with real knowledges in Windows app can make a sexier and more stable app.
+
+## How to use "Basic" logitech drivers
+
+1. Open your Device Manager
+2. Right click -> Update Driver, on the logitech G733 device in the "Sound, video and game controllers" section, NOT the "Audio inputs and outputs"  
+![device_man](images/device_manager.PNG)
+3. Clic "Browse my computer for drivers"  
+![driver](images/driver.PNG)
+4.Clic "Let me pick from a list of available drivers on my computer"  
+![driver2](images/driver2.PNG)
+5.Choose "USB Audio Device" instead of the Logitech one
+![driver3](images/driver3.PNG)
+6. Restart your computer (That's actually important)
+
+Once you have installed and enabled Dolby Atmos, you may still have NO sound. Do this again WITHOUT restarting, you should be good.
