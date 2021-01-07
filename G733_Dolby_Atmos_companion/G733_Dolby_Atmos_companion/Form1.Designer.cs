@@ -64,6 +64,7 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.timer_of_the_shame = new System.Windows.Forms.Timer(this.components);
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_brightness)).BeginInit();
@@ -384,6 +385,7 @@
             // 
             // HID_read_timer
             // 
+            this.HID_read_timer.Interval = 500;
             this.HID_read_timer.Tick += new System.EventHandler(this.HID_read_timer_Tick);
             // 
             // label11
@@ -414,6 +416,11 @@
             this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.DoubleClick += new System.EventHandler(this.notifyIcon1_DoubleClick);
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
             // Form1
             // 
@@ -496,6 +503,7 @@
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Timer timer_of_the_shame;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 

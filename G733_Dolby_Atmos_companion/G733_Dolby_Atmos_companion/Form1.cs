@@ -30,6 +30,14 @@ namespace G733_Dolby_Atmos_companion
         private int voltage = 0;
         private bool is_headset_connected = false;
 
+        Graphics canvas;
+        Bitmap iconBitmap = new Bitmap(32, 32);
+        Color backup2 = Color.FromArgb(255, 0, 76);
+        StringFormat format = new StringFormat();
+        int percent = 0;
+        double estim = 0;
+        HidDeviceData data;
+
         public Form1()
         {
             InitializeComponent();
@@ -73,6 +81,9 @@ namespace G733_Dolby_Atmos_companion
                     break;
                 default: break;
             }
+
+            canvas = Graphics.FromImage(iconBitmap);
+            format.Alignment = StringAlignment.Center;
 
             notify_percentage();
         }
@@ -188,6 +199,7 @@ namespace G733_Dolby_Atmos_companion
             HidDevice.Inserted -= DeviceAttachedHandler;
             HidDevice.Removed -= DeviceRemovedHandler;
 
+            backgroundWorker1.CancelAsync();
             HID_read_timer.Enabled = false;
             battery_level_update_timer.Enabled = false;
         }
@@ -228,13 +240,16 @@ namespace G733_Dolby_Atmos_companion
 
             HidDevice.MonitorDeviceEvents = true;
 
-            //Start USB Read Timer
+            //Start hid frame read process
+            backgroundWorker1.RunWorkerAsync();
+
+            //Start USB Read Timer (Well, it's a hack now, one more ... to detect headset)
             HID_read_timer.Enabled = true;
+
             //Start battery update Timer (every 60sec)
             battery_level_update_timer.Enabled = true;
-            //Set light profile
-            //set_lights();
             battery_level_update();
+            
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
@@ -358,15 +373,12 @@ namespace G733_Dolby_Atmos_companion
 
         private void HID_read_timer_Tick(object sender, EventArgs e)
         {
-            HidDevice.ReadReport(OnReport);
             if (voltage == 0) label11.Text = "Disconnected";
             else label11.Text = voltage.ToString() + " mV";
 
-            trackBar2.Value = Properties.Settings.Default.sidetone;
             if (is_headset_connected == true)
             {
                 pictureBox2.BackColor = Color.Green;
-                
             }
             else
             {
@@ -375,38 +387,36 @@ namespace G733_Dolby_Atmos_companion
             }
         }
 
-        private void OnReport(HidReport report)
+        private void process_frame(HidDeviceData report)
         {
             Console.WriteLine("Received hid frame: " + BitConverter.ToString(report.Data));
-            if (report.Data.Length >= 5)
-            {
-                if (report.Data[1] == 0x08 && ((report.Data[2] & 0xf0) == 0x00))
-                {
-                    voltage = report.Data[3] << 8;
-                    voltage |= report.Data[4];
-                    Console.WriteLine("Battery voltage: " + voltage);
 
-                    if (voltage == 0)
-                    {
-                        is_headset_connected = false;
-                    }
-                    else if (is_headset_connected == false)
-                    {
-                        is_headset_connected = true;
-                        Console.WriteLine("Start timer of the shame");
-                        BeginInvoke(new EventHandler(delegate
-                        {
-                            timer_of_the_shame.Enabled = true;
-                        }));
-                    }
-                }
-                if (report.Data[1] == 0x07 && ((report.Data[2] & 0xf0) == 0x10))
+            if (report.Data[2] == 0x08 && ((report.Data[3] & 0xf0) == 0x00))
+            {
+                voltage = report.Data[4] << 8;
+                voltage |= report.Data[5];
+                Console.WriteLine("Battery voltage: " + voltage);
+
+                if (voltage == 0)
                 {
-                    Console.WriteLine("Sidetone headset level: " + report.Data[3]);
-                    Properties.Settings.Default.sidetone = report.Data[3];
-                    Properties.Settings.Default.Save();
+                    is_headset_connected = false;
+                }
+                else if (is_headset_connected == false)
+                {
+                    is_headset_connected = true;
+                    Console.WriteLine("Start timer of the shame");
+                    BeginInvoke(new EventHandler(delegate
+                    {
+                        timer_of_the_shame.Enabled = true;
+                    }));
                 }
             }
+            if (report.Data[2] == 0x07 && ((report.Data[3] & 0xf0) == 0x10))
+            {
+                Console.WriteLine("Sidetone headset level: " + report.Data[4]);
+                Properties.Settings.Default.sidetone = report.Data[4];
+                Properties.Settings.Default.Save();
+            }   
         }
 
         private void trackBar2_ValueChanged(object sender, EventArgs e)
@@ -435,6 +445,7 @@ namespace G733_Dolby_Atmos_companion
             //Some shitty hack, wanted to use a background worker but ... way too much effort to achieve this.
             Console.WriteLine("Timer of the shame started");
             set_lights();
+            trackBar2.Value = Properties.Settings.Default.sidetone;
             sidetone_set();
             timer_of_the_shame.Enabled = false;
         }
@@ -454,9 +465,7 @@ namespace G733_Dolby_Atmos_companion
         }
 
         private void notify_percentage()
-        {
-            int percent = 0;
-           
+        { 
             if(voltage == 0)
             {
                 notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.icon;
@@ -468,19 +477,7 @@ namespace G733_Dolby_Atmos_companion
             {
                 percent = (int)(3451.853 - 2.885 * voltage + 0.00078188 * voltage * voltage - 0.000000067828 * voltage * voltage * voltage);
 
-                Graphics canvas;
-                Bitmap iconBitmap = new Bitmap(32, 32);
-                canvas = Graphics.FromImage(iconBitmap);
-
-                Color backup2 = Color.FromArgb(255, 0, 76);
-
-                var brush = new SolidBrush(backup2);
-
-                canvas.FillEllipse(brush, 0, 0, 32, 32);
-
-                StringFormat format = new StringFormat();
-                format.Alignment = StringAlignment.Center;
-
+                canvas.FillEllipse(new SolidBrush(backup2), 0, 0, 32, 32);
                 canvas.DrawString(
                     percent.ToString(),
                     new Font("NewTimeRoman", 18, FontStyle.Bold),
@@ -489,14 +486,23 @@ namespace G733_Dolby_Atmos_companion
                     format
                 );
 
-                double estim = (34 * percent / 100);
+                estim = (34 * percent / 100);
                 progressBar1.Value = Math.Min(percent, 100);
                 label9.Text = percent + "%";
                 label10.Text = "Approx " + (int)estim + " hours";
                 notifyIcon1.Icon = Icon.FromHandle(iconBitmap.GetHicon());
-
                 notifyIcon1.Text = voltage + " mV / " + percent + "% / Approx " + (int)estim + " hours";
             }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while(true)
+            {
+                data = HidDevice.Read();
+                process_frame(data);
+                if (backgroundWorker1.CancellationPending == true) return;
+            } 
         }
     }
 }
