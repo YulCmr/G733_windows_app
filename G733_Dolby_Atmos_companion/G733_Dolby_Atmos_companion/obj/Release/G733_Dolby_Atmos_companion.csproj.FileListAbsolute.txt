@@ -16,7 +16,6 @@ H:\Users\Yul\Documents\GitHub\G733_windows_app\G733_Dolby_Atmos_companion\G733_D
 H:\Users\Yul\Documents\GitHub\G733_windows_app\G733_Dolby_Atmos_companion\G733_Dolby_Atmos_companion\bin\Release\G733_Dolby_Atmos_companion.pdb
 H:\Users\Yul\Documents\GitHub\G733_windows_app\G733_Dolby_Atmos_companion\G733_Dolby_Atmos_companion\bin\Release\HidLibrary.dll
 H:\Users\Yul\Documents\GitHub\G733_windows_app\G733_Dolby_Atmos_companion\G733_Dolby_Atmos_companion\bin\Release\HidLibrary.pdb
-H:\Users\Yul\Documents\GitHub\G733_windows_app\G733_Dolby_Atmos_companion\G733_Dolby_Atmos_companion\obj\Release\G733_Dolby_Atmos_companion.csprojAssemblyReference.cache
 H:\Users\Yul\Documents\GitHub\G733_windows_app\G733_Dolby_Atmos_companion\G733_Dolby_Atmos_companion\obj\Release\G733_Dolby_Atmos_companion.Form1.resources
 H:\Users\Yul\Documents\GitHub\G733_windows_app\G733_Dolby_Atmos_companion\G733_Dolby_Atmos_companion\obj\Release\G733_Dolby_Atmos_companion.Properties.Resources.resources
 H:\Users\Yul\Documents\GitHub\G733_windows_app\G733_Dolby_Atmos_companion\G733_Dolby_Atmos_companion\obj\Release\G733_Dolby_Atmos_companion.csproj.GenerateResource.cache
