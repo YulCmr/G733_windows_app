@@ -378,32 +378,34 @@ namespace G733_Dolby_Atmos_companion
         private void OnReport(HidReport report)
         {
             Console.WriteLine("Received hid frame: " + BitConverter.ToString(report.Data));
-
-            if (report.Data[1] == 0x08 && ((report.Data[2] & 0xf0) == 0x00))
+            if (report.Data.Length >= 5)
             {
-                voltage = report.Data[3] << 8;
-                voltage |= report.Data[4];
-                Console.WriteLine("Battery voltage: " + voltage);
+                if (report.Data[1] == 0x08 && ((report.Data[2] & 0xf0) == 0x00))
+                {
+                    voltage = report.Data[3] << 8;
+                    voltage |= report.Data[4];
+                    Console.WriteLine("Battery voltage: " + voltage);
 
-                if(voltage == 0)
-                {
-                    is_headset_connected = false;
-                }
-                else if(is_headset_connected == false)
-                {
-                    is_headset_connected = true;
-                    Console.WriteLine("Start timer of the shame");
-                    BeginInvoke(new EventHandler(delegate
+                    if (voltage == 0)
                     {
-                        timer_of_the_shame.Enabled = true;
-                    }));
+                        is_headset_connected = false;
+                    }
+                    else if (is_headset_connected == false)
+                    {
+                        is_headset_connected = true;
+                        Console.WriteLine("Start timer of the shame");
+                        BeginInvoke(new EventHandler(delegate
+                        {
+                            timer_of_the_shame.Enabled = true;
+                        }));
+                    }
                 }
-            }
-            if (report.Data[1] == 0x07 && ((report.Data[2] & 0xf0) == 0x10))
-            {
-                Console.WriteLine("Sidetone headset level: " + report.Data[3]);
-                Properties.Settings.Default.sidetone = report.Data[3];
-                Properties.Settings.Default.Save(); 
+                if (report.Data[1] == 0x07 && ((report.Data[2] & 0xf0) == 0x10))
+                {
+                    Console.WriteLine("Sidetone headset level: " + report.Data[3]);
+                    Properties.Settings.Default.sidetone = report.Data[3];
+                    Properties.Settings.Default.Save();
+                }
             }
         }
 
