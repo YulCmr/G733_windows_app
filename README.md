@@ -1,7 +1,7 @@
 # G733_windows_app
 
 [Introduction](#introduction)  
-[Some Reverse...](#some-reverse...)  
+[Some Reverse...](#some-reverse)  
 [The Software](#The-Software)  
 [How to use "Basic" logitech drivers](#How-to-use-Basic-logitech-drivers)  
 
