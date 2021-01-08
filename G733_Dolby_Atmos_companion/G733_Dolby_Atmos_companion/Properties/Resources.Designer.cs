@@ -79,5 +79,25 @@ namespace G733_Dolby_Atmos_companion.Properties {
                 return ((System.Drawing.Icon)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon orange_circle {
+            get {
+                object obj = ResourceManager.GetObject("orange_circle", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon red_circle {
+            get {
+                object obj = ResourceManager.GetObject("red_circle", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }

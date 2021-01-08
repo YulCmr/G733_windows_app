@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using HidLibrary;
 using System.Diagnostics;
 using System.Threading;
+using System.Runtime.InteropServices;
+using System.Drawing.Drawing2D;
 
 namespace G733_Dolby_Atmos_companion
 {
@@ -28,11 +30,13 @@ namespace G733_Dolby_Atmos_companion
         private const byte cycling = 0x03;
 
         private int voltage = 0;
+        private bool is_headset_plugged = false;
         private bool is_headset_connected = false;
 
         Graphics canvas;
         Bitmap iconBitmap = new Bitmap(32, 32);
-        Color backup2 = Color.FromArgb(255, 0, 76);
+        Color pink = Color.FromArgb(255, 0, 76);
+        Color green = Color.FromArgb(0, 200, 0);
         StringFormat format = new StringFormat();
         int percent = 0;
         double estim = 0;
@@ -58,6 +62,8 @@ namespace G733_Dolby_Atmos_companion
             Color backup = Color.FromArgb(Properties.Settings.Default.color_R, Properties.Settings.Default.color_G, Properties.Settings.Default.color_B);
 
             pictureBox1.BackColor = backup;
+
+            progressBar1.Visible = false;
 
             switch (Properties.Settings.Default.light_mode)
             {
@@ -385,6 +391,22 @@ namespace G733_Dolby_Atmos_companion
                 pictureBox2.BackColor = Color.Red;
                 notifyIcon1.Text = "Disconnected";
             }
+
+            if( is_headset_plugged == true)
+            {
+                //progressBar1.SetState(2);
+                customProgressBar1.ForeColor = Color.FromArgb(155, 155, 0);
+                customProgressBar1.BackColor = Color.FromArgb(200, 200, 0);
+                //ProgressBarColor.SetState(progressBar1, 2);
+
+            }
+            else
+            {
+                //progressBar1.SetState(1);
+                //ProgressBarColor.SetState(progressBar1, 1);
+                customProgressBar1.ForeColor = Color.FromArgb(0, 120, 0);
+                customProgressBar1.BackColor = Color.FromArgb(0, 172, 0);
+            }
         }
 
         private void process_frame(HidDeviceData report)
@@ -395,6 +417,18 @@ namespace G733_Dolby_Atmos_companion
             {
                 voltage = report.Data[4] << 8;
                 voltage |= report.Data[5];
+
+                switch(report.Data[6])
+                {
+                    case 0x01: is_headset_plugged = false;
+                        break;
+                    case 0x03:
+                    case 0x07: is_headset_plugged = true;
+                        //voltage -= 370;
+                        break;
+                    default: break;
+                }
+                
                 Console.WriteLine("Battery voltage: " + voltage);
 
                 if (voltage == 0)
@@ -470,28 +504,83 @@ namespace G733_Dolby_Atmos_companion
             {
                 notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.icon;
                 progressBar1.Value = 0;
+                customProgressBar1.Value = 0;
                 label10.Text = "Approx -- hours";
                 label9.Text = "--%";
             }
             else
-            {
+            {   
                 percent = (int)(3451.853 - 2.885 * voltage + 0.00078188 * voltage * voltage - 0.000000067828 * voltage * voltage * voltage);
 
-                canvas.FillEllipse(new SolidBrush(backup2), 0, 0, 32, 32);
-                canvas.DrawString(
-                    percent.ToString(),
-                    new Font("NewTimeRoman", 18, FontStyle.Bold),
-                    new SolidBrush(Color.FromArgb(0, 0, 0)),
-                    new RectangleF(-5, 2, 42, 32),
-                    format
-                );
-
+                if(percent >= 60)
+                {
+                    try
+                    {
+                        notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.green_circle;
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Exception catched, icon related. I still don't know what happens....");
+                    }
+                }
+                else if(percent >= 40)
+                {
+                    try
+                    {
+                        notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.orange_circle;
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Exception catched, icon related. I still don't know what happens....");
+                    }
+                    /*canvas.FillEllipse(new SolidBrush(pink), 0, 0, 32, 32);
+                    canvas.DrawString(
+                        percent.ToString(),
+                        new Font("NewTimeRoman", 18, FontStyle.Bold),
+                        new SolidBrush(Color.FromArgb(0, 0, 0)),
+                        new RectangleF(-5, 2, 42, 32),
+                        format
+                    );*/
+                }
+                else
+                {
+                    try
+                    {
+                        notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.red_circle;
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Exception catched, icon related. I still don't know what happens....");
+                    }
+                }
+                
                 estim = (34 * percent / 100);
-                progressBar1.Value = Math.Min(percent, 100);
-                label9.Text = percent + "%";
+                //progressBar1.Value = Math.Min(percent, 100);
+                customProgressBar1.Value = Math.Min(percent, 100);
+                label9.Text = Math.Min(percent, 100) + "%";
                 label10.Text = "Approx " + (int)estim + " hours";
-                notifyIcon1.Icon = Icon.FromHandle(iconBitmap.GetHicon());
-                notifyIcon1.Text = voltage + " mV / " + percent + "% / Approx " + (int)estim + " hours";
+                /*try
+                {
+                    notifyIcon1.Icon = Icon.FromHandle(iconBitmap.GetHicon());
+                    notifyIcon1.Text = voltage + " mV / " + percent + "% / Approx " + (int)estim + " hours";
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine("Exception catched, icon related. I still don't know what happens....");
+
+                }*/
+
+                //Something must be wrong with their ADC ref voltage while charging .... I've measured a ~370mV offset while charging
+                if (is_headset_plugged == true && voltage >= 4270) 
+                {
+                    label8.Text = "Battery - Charged";
+                }
+                else if (is_headset_plugged == true)
+                {
+                    label8.Text = "Battery - Charging";
+                }
+                else label8.Text = "Battery";
             }
         }
 
@@ -503,6 +592,27 @@ namespace G733_Dolby_Atmos_companion
                 process_frame(data);
                 if (backgroundWorker1.CancellationPending == true) return;
             } 
+        }
+
+        
+    }
+    public class CustomProgressBar : ProgressBar
+    {
+        public CustomProgressBar()
+        {
+            this.SetStyle(ControlStyles.UserPaint, true);
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            Rectangle rec = new Rectangle(0, 0, this.Width, this.Height);
+            double scaleFactor = (((double)Value - (double)Minimum) / ((double)Maximum - (double)Minimum));
+            if (ProgressBarRenderer.IsSupported)
+                ProgressBarRenderer.DrawHorizontalBar(e.Graphics, rec);
+            rec.Width = (int)((rec.Width * scaleFactor) - 4);
+            rec.Height -= 4;
+            LinearGradientBrush brush = new LinearGradientBrush(rec, this.ForeColor, this.BackColor, LinearGradientMode.Vertical);
+            e.Graphics.FillRectangle(brush, 2, 2, rec.Width, rec.Height);
         }
     }
 }

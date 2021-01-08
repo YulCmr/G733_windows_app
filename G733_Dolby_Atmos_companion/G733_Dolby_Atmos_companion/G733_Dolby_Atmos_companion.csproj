@@ -93,6 +93,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="headphone-512.ico" />
+    <None Include="Resources\circle-share_icon-icons.ico" />
+    <None Include="Resources\trafficlight-red_40428.ico" />
     <None Include="Resources\green_circle.ico" />
     <None Include="Resources\grey_circle.ico" />
     <None Include="Resources\circle-1_icon-icons.com_70253.ico" />

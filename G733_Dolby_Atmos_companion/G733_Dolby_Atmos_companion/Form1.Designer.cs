@@ -65,6 +65,7 @@
             this.timer_of_the_shame = new System.Windows.Forms.Timer(this.components);
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.customProgressBar1 = new G733_Dolby_Atmos_companion.CustomProgressBar();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_brightness)).BeginInit();
@@ -354,7 +355,7 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(28, 413);
+            this.progressBar1.Location = new System.Drawing.Point(122, 4);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(134, 23);
             this.progressBar1.TabIndex = 16;
@@ -422,12 +423,20 @@
             this.backgroundWorker1.WorkerSupportsCancellation = true;
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
+            // customProgressBar1
+            // 
+            this.customProgressBar1.Location = new System.Drawing.Point(28, 414);
+            this.customProgressBar1.Name = "customProgressBar1";
+            this.customProgressBar1.Size = new System.Drawing.Size(137, 23);
+            this.customProgressBar1.TabIndex = 22;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.ClientSize = new System.Drawing.Size(315, 473);
+            this.Controls.Add(this.customProgressBar1);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.label10);
@@ -504,6 +513,7 @@
         private System.Windows.Forms.Timer timer_of_the_shame;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private CustomProgressBar customProgressBar1;
     }
 }
 
