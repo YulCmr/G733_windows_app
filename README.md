@@ -25,6 +25,10 @@ I need to know what's my battery level ! That's important and there is no way to
 I can't live with DTS X 2.0. Sound is shitty, really, I mean....  Really.
 I can't live with Stereo only. May sound stupid but I use Dolby since 6++ years and it sounds veeeerry good in video games.
 
+Update on 11 jan 2021 : Did a lot of tests and comparison between my old headset and the new one (especially between the "old dolby" and dolby atmos with this trick) and this method is nowhere as good as my old headset. At least some games don't support this at all. (Rust for example) It may be related to how the sound peripheral is detected by the game. My old headset is detected as a 7.1 system, which should trigger something in unity (I guess), whereas this method downgrades the headset driver to a stereo headset. It results in NO front/rear separation in these games which kills the immersion.
+
+Final Note : I'm currently thinking about returning my headset. I was motivated to start disassembling drivers and look at "how it works" under the hood as both my headsets use the same driver (and one can use dolby properly) but other things hold me back. There's some static noise happening when you try to play some harmonics together (like very low freq + very high freq). It can be heard in game and while playing songs and is really annoying... Tested on W10, Linux, with logitech "fancy" & "basic" drivers. It seems to be related to how the sound is compressed to be sent over the air and really kills the experience. I highly doubt that it's related to my unit only.
+
 #### TL;DR
 
 G733 without Dolby :
