@@ -66,6 +66,7 @@
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.customProgressBar1 = new G733_Dolby_Atmos_companion.CustomProgressBar();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_brightness)).BeginInit();
@@ -288,7 +289,7 @@
             this.trackBar2.Name = "trackBar2";
             this.trackBar2.Size = new System.Drawing.Size(189, 45);
             this.trackBar2.TabIndex = 1;
-            this.trackBar2.Value = 70;
+            this.trackBar2.Value = 100;
             this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
             this.trackBar2.ValueChanged += new System.EventHandler(this.trackBar2_ValueChanged);
             this.trackBar2.MouseCaptureChanged += new System.EventHandler(this.trackBar2_MouseCaptureChanged);
@@ -355,7 +356,7 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(122, 4);
+            this.progressBar1.Location = new System.Drawing.Point(169, 380);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(134, 23);
             this.progressBar1.TabIndex = 16;
@@ -417,6 +418,7 @@
             this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.DoubleClick += new System.EventHandler(this.notifyIcon1_DoubleClick);
+            this.notifyIcon1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseClick);
             // 
             // backgroundWorker1
             // 
@@ -430,12 +432,25 @@
             this.customProgressBar1.Size = new System.Drawing.Size(137, 23);
             this.customProgressBar1.TabIndex = 22;
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.ForeColor = System.Drawing.Color.Silver;
+            this.checkBox1.Location = new System.Drawing.Point(205, 3);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(108, 17);
+            this.checkBox1.TabIndex = 23;
+            this.checkBox1.Text = "launch on startup";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.ClientSize = new System.Drawing.Size(315, 473);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.customProgressBar1);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.label11);
@@ -514,6 +529,7 @@
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private CustomProgressBar customProgressBar1;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 

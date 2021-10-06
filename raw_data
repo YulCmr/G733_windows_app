@@ -102,6 +102,8 @@ usb.src == "1.24.0" || usb.dst == "1.24.0"  || usb.src == "1.24.1" || usb.dst ==
 
 usb.src == "1.14.0" || usb.dst == "1.14.0" || usb.src == "1.14.3" || usb.dst == "1.14.3"
 
+usb.src == "1.6.0" || usb.dst == "1.6.0" || usb.src == "1.6.3" || usb.dst == "1.6.3" || usb.src == "1.6.1" || usb.dst == "1.6.1"
+
 .0 -> HID commands write
 .1 -> Audio Stream IN (mic)??
 .2 -> Audio Stream OUT (speaker) ??

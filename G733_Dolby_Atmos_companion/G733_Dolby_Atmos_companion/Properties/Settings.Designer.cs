@@ -118,5 +118,17 @@ namespace G733_Dolby_Atmos_companion.Properties {
                 this["color_B"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool startup_launch {
+            get {
+                return ((bool)(this["startup_launch"]));
+            }
+            set {
+                this["startup_launch"] = value;
+            }
+        }
     }
 }

@@ -12,6 +12,8 @@ using System.Diagnostics;
 using System.Threading;
 using System.Runtime.InteropServices;
 using System.Drawing.Drawing2D;
+using System.Security.Principal;
+using System.Management;
 
 namespace G733_Dolby_Atmos_companion
 {
@@ -45,6 +47,7 @@ namespace G733_Dolby_Atmos_companion
         public Form1()
         {
             InitializeComponent();
+           
             colorDialog1.AllowFullOpen = true;
             pictureBox1.BackColor = colorDialog1.Color;
             notifyIcon1.Visible = true;
@@ -58,6 +61,8 @@ namespace G733_Dolby_Atmos_companion
             trackBar1.Value = Properties.Settings.Default.light_duration;
             trackBar2.Value = Properties.Settings.Default.sidetone;
             trackBar_brightness.Value = Properties.Settings.Default.light_brightness;
+
+            checkBox1.Checked = Properties.Settings.Default.startup_launch;
 
             Color backup = Color.FromArgb(Properties.Settings.Default.color_R, Properties.Settings.Default.color_G, Properties.Settings.Default.color_B);
 
@@ -92,6 +97,23 @@ namespace G733_Dolby_Atmos_companion
             format.Alignment = StringAlignment.Center;
 
             notify_percentage();
+            TrayMenuContext();
+
+            this.WindowState = FormWindowState.Minimized;
+            this.ShowInTaskbar = false;
+        }
+
+        private void TrayMenuContext()
+        {
+            this.notifyIcon1.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
+            this.notifyIcon1.ContextMenuStrip.Items.Add("Exit", null, this.MenuExit_Click);
+            //this.notify_icon.ContextMenuStrip.Items.Add("Test2", null, this.MenuTest2_Click);
+            //this.notify_icon.ContextMenuStrip.Items.Add("Exit", null, this.MenuExit_Click);
+        }
+
+        void MenuExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -150,7 +172,7 @@ namespace G733_Dolby_Atmos_companion
                     OutData[6] = (byte)r;
                     OutData[7] = (byte)g;
                     OutData[8] = (byte)b;
-                    OutData[9] = 0x02; 
+                    OutData[9] = 0x02;
                     break;
                 case breathing:
                     //bytes 6,7,8 color
@@ -496,6 +518,7 @@ namespace G733_Dolby_Atmos_companion
         {
             Show();
             this.WindowState = FormWindowState.Normal;
+            this.ShowInTaskbar = true;
         }
 
         private void notify_percentage()
@@ -510,24 +533,29 @@ namespace G733_Dolby_Atmos_companion
             }
             else
             {   
-                percent = (int)(3451.853 - 2.885 * voltage + 0.00078188 * voltage * voltage - 0.000000067828 * voltage * voltage * voltage);
-
-                if(percent >= 60)
+                //percent = (int)(3451.853 - 2.885 * voltage + 0.00078188 * voltage * voltage - 0.000000067828 * voltage * voltage * voltage);
+                //percent = (int)(0.2 * voltage - 740);
+                percent = (int)(0.1667 * voltage - 608.33);
+                if (percent >= 60)
                 {
                     try
                     {
-                        notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.green_circle;
+                        if (is_headset_plugged == true && percent >= 80) notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.green_charging;
+                        else if (is_headset_plugged == true) notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.orange_charging;
+                        else notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.green;
                     }
                     catch
                     {
                         Console.WriteLine("Exception catched, icon related. I still don't know what happens....");
                     }
                 }
-                else if(percent >= 40)
+                else if(percent >= 20)
                 {
                     try
                     {
-                        notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.orange_circle;
+                        if (is_headset_plugged == true && percent >= 40) notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.orange_charging;
+                        else if (is_headset_plugged == true) notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.red_charging;
+                        else notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.orange;
                     }
                     catch
                     {
@@ -546,7 +574,8 @@ namespace G733_Dolby_Atmos_companion
                 {
                     try
                     {
-                        notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.red_circle;
+                        if (is_headset_plugged == true) notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.red_charging;
+                        else notifyIcon1.Icon = G733_Dolby_Atmos_companion.Properties.Resources.red;
                     }
                     catch
                     {
@@ -554,8 +583,9 @@ namespace G733_Dolby_Atmos_companion
                     }
                 }
                 
-                estim = (34 * percent / 100);
+                estim = (29 * percent / 100);
                 //progressBar1.Value = Math.Min(percent, 100);
+                percent = Math.Max(0, percent);
                 customProgressBar1.Value = Math.Min(percent, 100);
                 label9.Text = Math.Min(percent, 100) + "%";
                 label10.Text = "Approx " + (int)estim + " hours";
@@ -572,15 +602,21 @@ namespace G733_Dolby_Atmos_companion
                 }*/
 
                 //Something must be wrong with their ADC ref voltage while charging .... I've measured a ~370mV offset while charging
-                if (is_headset_plugged == true && voltage >= 4270) 
+                if (is_headset_plugged == true && voltage >= 4270)
                 {
                     label8.Text = "Battery - Charged";
+                    notifyIcon1.Text = voltage + " mV / " + percent + "% / Charged !";
                 }
                 else if (is_headset_plugged == true)
                 {
                     label8.Text = "Battery - Charging";
+                    notifyIcon1.Text = voltage + " mV / " + percent + "% / Charging...";
                 }
-                else label8.Text = "Battery";
+                else
+                {
+                    label8.Text = "Battery";
+                    notifyIcon1.Text = voltage + " mV / " + percent + "% / Approx " + (int)estim + " hours";
+                }
             }
         }
 
@@ -594,7 +630,34 @@ namespace G733_Dolby_Atmos_companion
             } 
         }
 
-        
+        private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+
+            }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if(checkBox1.Checked == true)
+            {
+                Properties.Settings.Default.startup_launch = true;
+                Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                key.SetValue("G733_Dolby_Companion", Application.ExecutablePath);
+            }
+            else
+            {
+                Properties.Settings.Default.startup_launch = false;
+                Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                key.DeleteValue("G733_Dolby_Companion", false);
+            }
+            Properties.Settings.Default.Save();
+        }
     }
     public class CustomProgressBar : ProgressBar
     {
@@ -609,8 +672,10 @@ namespace G733_Dolby_Atmos_companion
             double scaleFactor = (((double)Value - (double)Minimum) / ((double)Maximum - (double)Minimum));
             if (ProgressBarRenderer.IsSupported)
                 ProgressBarRenderer.DrawHorizontalBar(e.Graphics, rec);
-            rec.Width = (int)((rec.Width * scaleFactor) - 4);
+            rec.Width = (int)((rec.Width * scaleFactor)-4);
+            if (rec.Width == 0) rec.Width = 1;
             rec.Height -= 4;
+            if (rec.Height == 0) rec.Height = 1;
             LinearGradientBrush brush = new LinearGradientBrush(rec, this.ForeColor, this.BackColor, LinearGradientMode.Vertical);
             e.Graphics.FillRectangle(brush, 2, 2, rec.Width, rec.Height);
         }
